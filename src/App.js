@@ -19,7 +19,7 @@ function App() {
           </ul>
         }
         />
-        <Route path='/labas' element={<StudentsFormPage />} />
+        <Route path='/students-form' element={<StudentsFormPage />} />
 
         </Routes>
 

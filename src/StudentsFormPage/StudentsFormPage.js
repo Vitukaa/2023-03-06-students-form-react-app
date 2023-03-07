@@ -1,11 +1,16 @@
 import { useState } from "react"
+import Inputs from "./Inputs"
+import {v4 as uuid } from 'uuid'
+import StudentItem from "./StudentItem"
 
 export default function StudentsFormPage() {
     const [studentsList, setStudentsList] = useState([])
-    const [checked, setChecked] = useState(false)
-    const hideText = (text) => {
-        return '*'.repeat(text.length)
-    }
+    // const [checked, setChecked] = useState(false)
+
+    const groups = ['feu-1', 'feu-2', 'feu-3', 'feu-4', 'feu-5']
+    const interests = ['javascript', 'ruby', 'php', 'c#', 'java']
+
+
 
 
     const deleteHandler = (id) => {
@@ -15,33 +20,25 @@ export default function StudentsFormPage() {
     }
 
 
-    const personalInfoHandler = (id) => {
-        setStudentsList(prevState => {
-            const personalInfoOutput = prevState.map(student => {
-                if (student.id === id) {
-                    const personalInfoOuputChange =  {...student, isHidden: !student.isHidden}
-                    return personalInfoOuputChange
-                }
-                return student
-            })
-            return personalInfoOutput
-        })
-    }
 
 
-    const checkHandler = (event) => {
-        const checked = event.target.checked
-        const checkedValue = event.target.value
-        const checkedName = event.target.name
-        setChecked(event.target.checked)
+    const editHandler = (id) => {
+        
     }
+
+    // const checkHandler = (event) => {
+    //     const checked = event.target.checked
+    //     const checkedValue = event.target.value
+    //     const checkedName = event.target.name
+    //     setChecked(event.target.checked)
+    // }
 
 
     const createStudentHandler = (event) => {
         event.preventDefault()
 
         let studentDataObj = {
-            id: Math.random(),
+            id: uuid(),
             isHidden: true,
             name: event.target.name.value,
             surname: event.target.surname.value,
@@ -53,7 +50,6 @@ export default function StudentsFormPage() {
             // interest: ,
         }
         setStudentsList(prevState => [studentDataObj, ...prevState])
-        // console.log(studentDataObj.interest)
     }
 
   return (
@@ -85,87 +81,21 @@ export default function StudentsFormPage() {
             </div>
             <fieldset>
                 <legend htmlFor='group'>Choose your group:</legend>
-                <div>
-                    <input type="radio" name="group" id="feu1" value="feu-1" />
-                    <label htmlFor="feu1">FEU 1 gr.</label>
-                </div>
-                <div>
-                    <input type="radio" name="group" id="feu2" value="feu-2"/>
-                    <label htmlFor="feu2">FEU 2 gr.</label>
-                </div>
-                <div>
-                    <input type="radio" name="group" id="feu3" value="feu-3"/>
-                    <label htmlFor="feu3">FEU 3 gr.</label>
-                </div>
-                <div>
-                    <input type="radio" name="group" id="feu4" value="feu-4"/>
-                    <label htmlFor="feu4">FEU 4 gr.</label>
-                </div>
-                <div>
-                    <input type="radio" name="group" id="feu5" value="feu-5"/>
-                    <label htmlFor="feu5">FEU 5 gr.</label>
-                </div>
+                {groups.map((group, index) => <Inputs key={index} type='radio' name='group' data={group} />)}
             </fieldset>
             <fieldset>
-            <legend>Choose IT language interests:</legend>
-            <div>
-                <input type="checkbox" name="interest" id="javascript" value="JavaScript" onChange={checkHandler} checked={checked}/>
-                <label htmlFor="javascript" >JavaScript</label>
-            </div>
-            <div>
-                <input type="checkbox" name="interest" id="ruby" value="Ruby" onChange={checkHandler} checked={checked}/>
-                <label htmlFor="ruby">Ruby</label>
-            </div>
-            <div>
-                <input type="checkbox" name="interest" id="php" value="PHP" onChange={checkHandler} checked={checked}/>
-                <label htmlFor="php">PHP</label>
-            </div>
-            <div>
-                <input type="checkbox" name="interest" id="c#" value="C#" onChange={checkHandler} checked={checked}/>
-                <label htmlFor="c#">C#</label>
-            </div>
-            <div>
-                <input type="checkbox" name="interest" id="java" value="Java" onChange={checkHandler} checked={checked}/>
-                <label htmlFor="java">Java</label>
-            </div>
-        </fieldset>
+                <legend>Choose IT language interests:</legend>
+                {interests.map((interest, index) => <Inputs key={index} type='checkbox' name='interest' data={interest} />)}
+            </fieldset>
             <input type='submit' value='Create student'></input>
         </form>
-        {(studentsList && studentsList.length > 0) && studentsList.map((student, index) => (
-            <div key={index} className='student-output'>
-                <h1>{student.name} {student.surname} ({student.age})</h1>
-                <h3>IT knowledge: {student.knowledge}</h3>
-                <h3>Group: {student.group}</h3>
-                <h4>Interests:{student.interest}</h4>
-                <p>Contacts info:</p>
-                <ul>
-                    {student.isHidden ? (
-                        <>
-                            <li>Phone: {hideText(student.phone)}</li>
-                            <li>Email: {hideText(student.email)}</li>
-                        </>
-                    ) : (
-                        <>
-                            <li>Phone: {student.phone}</li>
-                            <li>Email: {student.email}</li>
-                        </>
-                    )
-                    }
-                </ul>
-                <button onClick={() => deleteHandler(student.id)}>Delete</button>
-                <button onClick={() => personalInfoHandler(student.id)}>Show personal info</button>
-            </div>
-
-        )
-        
-
-        )
 
 
-
-}
+        {(studentsList && studentsList.length > 0) && 
+            studentsList.map((student, index) => (
+                <StudentItem key={index} {...student} student={student} onDelete={deleteHandler} onEdit={editHandler} setStudentsList={setStudentsList}/>
+            ))
+        }
     </div>
-    
-
   )
 }
